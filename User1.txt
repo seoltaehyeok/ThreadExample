@@ -1,0 +1,17 @@
+package s_synchronized;
+
+public class User1 extends Thread{
+	private Calculator calculator;
+
+	public void setCalculator(Calculator calculator) {
+		this.setName("user1");
+		this.calculator = calculator; //공유객체가 필드로 저장
+	}
+	
+	@Override
+	public void run() {
+		calculator.setMemory(100);
+	}
+	
+	
+}

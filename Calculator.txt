@@ -1,0 +1,18 @@
+package s_synchronized;
+
+public class Calculator {
+	private int memory;
+
+	public int getMemory() {
+		return memory;
+	}
+
+	public synchronized void setMemory(int memory) { //스레드가 실행하는 동안 다른 스레드는 setMemory 실행불가
+		this.memory = memory;
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {} //스레드 일시정지
+		System.out.println(Thread.currentThread().getName() + ": " + this.memory);
+	}
+	
+}

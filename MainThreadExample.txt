@@ -1,0 +1,19 @@
+package s_synchronized;
+
+public class MainThreadExample {
+
+	public static void main(String[] args) {
+		//공유객체생성
+		Calculator calculator = new Calculator();
+		
+		//thread객체생성
+		User1 user1 = new User1();
+		user1.setCalculator(calculator); //공유객체전달
+		user1.start();
+		
+		User2 user2 = new User2();
+		user2.setCalculator(calculator); //공유객체전달
+		user2.start();
+	}
+
+}
