@@ -1,14 +1,17 @@
-package wait_notify;
+package wait_notify3;
 
 public class WaitNotifyExample {
 
 	public static void main(String[] args) {
-		WorkObject sharedObject = new WorkObject();
+		DataBox dataBox = new DataBox(); // 공유객체생성
 		
-		ThreadA threadA = new ThreadA(sharedObject);
-		ThreadB threadB = new ThreadB(sharedObject);
+		ProducerThread producerThread = new ProducerThread(dataBox); //생성자 스레드 객체생성
+		ConsumerThread consumerThread = new ConsumerThread(dataBox); //소비자 스레드 객체생성
 		
-		threadA.start();
-		threadB.start();
+		producerThread.start();
+		consumerThread.start();
+		
+		
 	}
+
 }
