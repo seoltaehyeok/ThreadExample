@@ -1,4 +1,4 @@
-package Daemon;
+package ThreadGroup;
 
 public class AutoSaveThread extends Thread{
 	public void save() {
