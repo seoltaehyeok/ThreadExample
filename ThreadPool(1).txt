@@ -1,0 +1,93 @@
+<스레드 풀>
+스레드폭증: 병렬 작업 처리가 많아지면 스레드의 개수가 증가하게 됨
+	스레드 개수가 증가하면 스레드 생성과 스케쥴링으로 인해 CPU가 바빠지고 메모리사용량증가
+	=>애플리케이션의 성능이 저하될 수 있음
+스레드 풀: 아무리 많은 브라우저가 접근하더라도 웹 서버는 시스템 사양에 맞게 스레드 수를 적절히 조정
+	작업 처리에 사용되는 스레드를 제한된 개수만큼 미리 생성
+	작업 큐에 들어오는 작업들을 하나씩 스레드가 맡아서 처리
+	작업 처리가 끝난 스레드는 작업 결과를 애플리케이션으로 전달
+
+ExcutorService 인터페이스와 Excutors 클래스 : 
+스레드풀을 생성하고 사용할 수 있도록 java.util.concurrent패키지에서 제공
+Executors의 정적 메소드를 이용해서 ExecutorService 구현 객체(스레드풀 객체) 생성
+스레드 풀 = ExcutorService 객체	
+
+애플리케이션에서 스레드풀에 작업처리를 요청하면 작업큐 공간에 쌓이고, 각 스레드는 큐에서 작업을 가져와 실행
+=> 즉, 애플리케이션에서 많은 작업들을 요청을 한다고 하더라도 작업큐에 요청작업은 누적되나, 스레드는 한정적
+=> 따라서 갑작스러운 애플리케이션의 성능저하는 발생하지 않는다. (서버 프로그램을 만들 때 스레드풀을 사용)
+
+스레드풀 생성: 
+newCachedThreadPool():
+코드작성->
+Executorservice executorservice = Excutors, newCachedThreadPool();
+int값이 가질 수 있는 최대 값만큼 스레드가 추가되나, 실제로 운영체제의 상황에 따라 다름
+1개 이상의 스레드가 추가되었을 경우 60초동안 추가된 스레드가
+아무 작업을 하지 않는다면 추가된 스레들를 종료하고 풀에서 제거함
+
+
+초기 스레드 수: 스레드 풀을 처음 만들 때 기본적으로 들어가 있는 스레드 수 
+코어 스레드 수: 풀에서 사용되지 않는 스레드를 제거하고 최소한으로 스레드풀에 유지되어야 할 스레드 수
+최대 스레드 수: 스레드 풀 안에서 최대로 생성될 수 있는 스레드 수
+
+newFixedThreadPool(int nThreads)
+만약 코어 스레드 수가 최대 스레드 수가 같다면 스레드가 작업을 처리하지 않고 있더라도 스레드 개수가 줄지않음
+
+코드작성->
+ExecutorService executorService = Executors.newFixedThreadPool( 
+	Runtime.getRuntime().availableProcessors() );
+=> 현재 CPU의 코어의 수를 얻게 됨 (더블코어 =>2, 쿼드코어 =>4)
+
+ThreadPoolExecutor을 이용한 직접 생성:
+스레드의 수를 자동으로 관리하고 싶을 경우 직접 생성해서 사용
+
+ex) 코어 스레드:3, 최대 스레드:100인 스레드 풀
+3개를 제외한 나머지 추가된 스레드는 120초 동안 놀고 있을 경우 해당 스레드를 제거해서 스레드 수 관리
+
+=>
+Executorservice threadPool = new ThreadPoolExecutor(
+	3, 				//코어 스레드 개수
+	100, 				//최대 스레드 개수
+	120L, 				//놀고 있는 시간
+	TimeUnit.SECONDS,			//놀고 있는 시간 단위
+	nuw SynchronousQueue<Runnable>()	//작업큐
+);
+
+스레드풀 종료: 스레드풀의 스레드는 데몬스레드가 아님
+	따라서 main스레드가 종료되더라도 스레드풀의 스레드는 계속 실행(애플리케이션은 종료하지 않음)
+	따라서 스레드풀을 종료해서 모든 스레드를 종료시켜야만 애플리케이션이 종료됨
+종료 메소드:
+shutdown(): 현재 작업 및 작업 큐에 대기 중인 모든 작업을 처리한 뒤 스레드 풀 종료
+shutdownNow(): 현재 작업 처리중인 스레드를 interrupt 해서 작업 중지 후 스레드풀 종료
+		작업큐에 미처리된 작업(Runnalble)을 리턴
+가급적이면 shutdownNow()를 사용x. 현재 작업이 불완전하게 끝나면서, 미처리된 작업이 있기때문
+
+awaitTermination(long timeout, TimeUnit unit): 
+shutdown() 메소드 호출 이후 모든 작업 처리를 timeout시간 내에 완료하면 true를 리턴,
+그렇지 않으면 interrupt를 사용하여 스레드풀을 종료 후 false를 리턴함 (TimeUnit unit은 시분초 단위)
+
+작업생성 방법
+Runnable 객체: 작업 처리 완료 후 리턴값이 없음
+	Runnable task = new Runnable(){
+	 @Override
+	public void run(){ //스레드가 처리할 작업 내용 }
+	}
+Callable 객체: 작업 처리 완료 후 리턴값이 있음
+	Callable<리턴타입> task = new Callable<리턴타입> {
+	@Override
+	public 리턴타입 call() throws Exception {
+	//스레드가 처리할 작업 내용
+	return 리턴타입; }
+	}
+
+위의 Runnable 또는 Callable 객체를 작업큐에서 가져와서 스레드로 하여금 run() 또는 call()메소드 실행
+그 이전에 '작업처리요청'을 통해 ExecutorService의 작업큐에 Runnable 또는 Callable 객체를 넣는다.
+
+작업처리요청: 
+execute(Runnable command) : Runnable을 작업큐에 저장, 작업 처리 결과 받지못함(리턴값x)
+sumit(Runnable task)	: 리턴값이 없는 작업을 사용할 수 있음
+sumit(Runnable task, V result)
+sumit(callable<V>, task)	: Runnable or Callable을 작업큐에 저장, 리턴값o
+
+작업처리예외시: 
+execute(): 스레드가 종료되고해당 스레드 제거(스레드풀은 다른 작업 처리를 위해 새로운 스레드 생성)
+submit(): 스레드가 종료되지 않고 해당 예외가 발생한 작업만 버린 뒤 스레드는 다음 작업을 위해 재사용
