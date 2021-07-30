@@ -36,7 +36,6 @@ public class ResultByCallableExample {
 		} catch (Exception e) {
 			System.out.println("[예외발생함] : " + e.getMessage());
 		}
-		
 		executorService.shutdown();
 	}
 
