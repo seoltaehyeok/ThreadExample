@@ -9,14 +9,14 @@ public class ResultByCallableExample {
 
 	public static void main(String[] args) {
 		ExecutorService executorService = Executors.newFixedThreadPool(
-				Runtime.getRuntime().availableProcessors() // ÇöÀç ÄÄÇ»ÅÍ CPUÀÇ ÄÚ¾îÀÇ ¼ö
+				Runtime.getRuntime().availableProcessors() // í˜„ì¬ ì»´í“¨í„° CPUì˜ ì½”ì–´ì˜ ìˆ˜
 		);
 		
-		//ÀÛ¾÷Ã³¸®¿äÃ»
-		System.out.println("[ÀÛ¾÷ Ã³¸® ¿äÃ»]");
+		//ì‘ì—…ì²˜ë¦¬ìš”ì²­
+		System.out.println("[ì‘ì—… ì²˜ë¦¬ ìš”ì²­]");
 		Callable<Integer> task = new Callable<Integer>() {
 			@Override
-			public Integer call() { // call()Àº ¹İµå½Ã Callable¿¡¼­ ÁöÁ¤ÇÑ Å¸ÀÔ ÆÄ¶ó¹ÌÅÍ¿Í µ¿ÀÏÇØ¾ßÇÔ
+			public Integer call() { // call()ì€ ë°˜ë“œì‹œ Callableì—ì„œ ì§€ì •í•œ íƒ€ì… íŒŒë¼ë¯¸í„°ì™€ ë™ì¼í•´ì•¼í•¨
 				int sum = 0;
 				for(int i=1; i<=10; i++) {
 					sum += i;
@@ -25,18 +25,17 @@ public class ResultByCallableExample {
 			}			
 		};
 		
-		//ThreadPoolÀÇ ÀÛ¾÷Å¥¿¡ ÀúÀå
-		//Future °´Ã¼´Â ³ªÁß¿¡ get() ¸Ş¼Òµå·Î ¾òÀ» ¼ö ÀÖ´Â °á°ú°ªÀÌ IntegerÀÌ¹Ç·Î Future ¶ÇÇÑ Å¸ÀÔ ÆÄ¶ó¹ÌÅÍ<Integer> ÁöÁ¤
-		Future<Integer> future = executorService.submit(task); //submitÀº ¸®ÅÏ°ª ¶ÇÇÑ ¹ŞÀ» ¼ö ÀÖÀ½
+		//ThreadPoolì˜ ì‘ì—…íì— ì €ì¥
+		//Future ê°ì²´ëŠ” ë‚˜ì¤‘ì— get() ë©”ì†Œë“œë¡œ ì–»ì„ ìˆ˜ ìˆëŠ” ê²°ê³¼ê°’ì´ Integerì´ë¯€ë¡œ Future ë˜í•œ íƒ€ì… íŒŒë¼ë¯¸í„°<Integer> ì§€ì •
+		Future<Integer> future = executorService.submit(task); //submitì€ ë¦¬í„´ê°’ ë˜í•œ ë°›ì„ ìˆ˜ ìˆìŒ
 		
 		try {
-			int sum = future.get();  // future.get()Àº À§ÀÇ call() ¸Ş¼Òµå¿¡¼­ ¸®ÅÏ µÈ sum °ªÀ» ¹ŞÀ½
-			System.out.println("[Ã³¸® °á°ú] : " + sum);
-			System.out.println("[ÀÛ¾÷ Ã³¸® ¿Ï·á]");
+			int sum = future.get();  // future.get()ì€ ìœ„ì˜ call() ë©”ì†Œë“œì—ì„œ ë¦¬í„´ ëœ sum ê°’ì„ ë°›ìŒ
+			System.out.println("[ì²˜ë¦¬ ê²°ê³¼] : " + sum);
+			System.out.println("[ì‘ì—… ì²˜ë¦¬ ì™„ë£Œ]");
 		} catch (Exception e) {
-			System.out.println("[¿¹¿Ü¹ß»ıÇÔ] : " + e.getMessage());
+			System.out.println("[ì˜ˆì™¸ë°œìƒí•¨] : " + e.getMessage());
 		}
 		executorService.shutdown();
 	}
-
 }
